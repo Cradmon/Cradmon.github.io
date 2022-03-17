@@ -1,0 +1,63 @@
+body {
+	display: grid;
+	grid-template-rows: 120px auto 150px;
+	background-color: black;
+}
+
+.mainTitle {
+	width: 100%;
+	padding-top: 50px;
+	line-height: 36px;
+	font-size: 36px;
+	text-align: center;
+	color: rgb(100, 100, 100);
+}
+
+.mainTitle a:hover {
+	color: white;
+}
+
+.mainTitle {
+	color: white;
+}
+
+nav {
+	@extend %columnFlex;
+	padding-left: 30px;
+	padding-right: 30px;
+	color: rgb(100, 100, 100);
+}
+
+.navItem {
+	@extend %columnFlexItem;
+	max-width: 600px;
+	height: 80px;
+	padding-top: 25px;
+	font-size: 24px;
+	line-height: 30px;
+	border-radius: 1px;
+}
+
+.navItem:hover {
+	color: black;
+	background-color: white;
+}
+
+footer {
+	height: 120px;
+	padding-top: 50px;
+	background: black;
+	text-align: center;
+}
+
+footer h1 {
+	font-size: 14px;
+	color: rgb(80, 80, 80);
+}
+
+footer p {
+	font-size: 12px;
+	text-align: center;
+	color: rgb(80, 80, 80);
+}
+

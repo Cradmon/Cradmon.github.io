@@ -1,0 +1,8 @@
+<header>
+	<h1><a href="/">Sort Algorithms</a></h1>
+	<nav>
+		{% for item in site.data.links.navLinks %}
+		<a href="{{ item.link }}" class="{% if page.url == item.link %} navItemSelected {% endif %} navItem">{{ item.name }}</a>
+		{% endfor %}
+	</nav>
+</header>
