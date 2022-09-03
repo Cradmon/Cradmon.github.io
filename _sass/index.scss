@@ -1,0 +1,70 @@
+@use 'reset';
+
+$bodyBgCol: rgb(255, 255, 252);
+$menuBtnCol: rgb(100, 100, 100);
+$navBarCol: rgb(50, 50, 50);
+$navBarTitleBgCol: rgb(20, 20, 20);
+$navBarHoverCol: rgb(80, 80, 80);
+$navBarSelectedCol: rgb(100, 150, 230);
+
+@use 'navBar';
+$mainContentLeftPadding: navBar.$menuBtnWidth + 30px;
+
+body {
+	font-family: sans-serif;
+	background-color: $bodyBgCol;
+}
+
+#titleBar {
+	z-index: 1;
+	width: 100%;
+	height: navBar.$menuBtnHeight;
+	transition: margin .5s ease-out;
+
+	display: flex;
+	align-items: center;
+	> h1 {
+		padding-left: $mainContentLeftPadding;
+		font-size: 2rem;
+
+		transition: padding-left .5s ease-out;
+	}
+}
+
+#mainContent {
+	z-index: 1;
+
+	width: clamp(300px, 100% - $mainContentLeftPadding - navBar.$menuBtnWidth, 600px);
+	padding: 30px navBar.$menuBtnWidth 60px $mainContentLeftPadding;
+
+	filter: blur(calc(var(--headerActive) * 3px));
+	transition: margin .5s ease-out, padding-left .5s ease-out, filter .5s ease-out;
+
+	> h1 {
+		color: navBar.$navBarSelectedCol;
+		font-size: 1.75rem;
+		padding-bottom: 20px;
+	}
+}
+
+@media only screen and (min-width: navBar.$navBarWidth + 30px + 600px + 30px) {
+	body {
+		--headerActive: 1;
+		--menuBtnActive: 0;
+	}
+
+	#titleBar {
+		width: calc(100% - #{navBar.$navBarFullWidth});
+		margin-left: navBar.$navBarFullWidth;
+
+		>h1 {
+			padding-left: 30px;
+		}
+	}
+
+	#mainContent {
+		margin-left: navBar.$navBarFullWidth;
+		padding-left: 30px;
+		filter: none;
+	}
+}

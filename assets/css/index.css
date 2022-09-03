@@ -1,0 +1,164 @@
+* {
+  margin: 0px;
+  border: 0px;
+  padding: 0px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+#navBar > header > #titleBox, #navBar > button {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+body {
+  --headerActive: 0;
+  --menuBtnActive: 1;
+}
+
+#navBar * {
+  font-weight: bold;
+}
+#navBar > * {
+  position: fixed;
+}
+#navBar > button {
+  z-index: 3;
+  margin-left: calc(-40px + var(--menuBtnActive) * 40px);
+  width: 40px;
+  height: 120px;
+  border-radius: 0px 0px calc(5px - var(--headerActive) * 5px) 0px;
+  color: rgb(100, 100, 100);
+  fill: rgb(100, 100, 100);
+  background-color: rgb(50, 50, 50);
+  transition: margin 0.5s ease-out, border-radius 0.5s ease-out;
+}
+#navBar > button #menuIcon {
+  margin-bottom: 10px;
+  width: 16px;
+  height: 16px;
+  transition: d 2s ease-out;
+}
+#navBar > button #menuIcon path:nth-child(1) {
+  d: path("M 0,0 					h 16 					v 2 					h -16 					Z");
+}
+#navBar > button #menuIcon path:nth-child(2) {
+  d: path("M 0,7 					h 16 					v 2 					h -16 					Z");
+}
+#navBar > button #menuIcon path:nth-child(3) {
+  d: path("M 0,14 					h 16 					v 2 					h -16 					Z");
+}
+#navBar > button > p {
+  writing-mode: vertical-lr;
+  text-orientation: upright;
+  letter-spacing: 2px;
+}
+#navBar > button:hover {
+  cursor: pointer;
+  color: rgb(255, 255, 252);
+  fill: rgb(255, 255, 252);
+}
+#navBar > header {
+  z-index: 2;
+  height: 100vh;
+  width: 250px;
+  margin-left: calc(-255px + (var(--headerActive) * 255px));
+  border-right: 5px solid rgb(100, 150, 230);
+  color: rgb(255, 255, 252);
+  transition: margin 0.5s ease-out;
+}
+#navBar > header > #titleBox {
+  height: 120px;
+  padding-left: calc(var(--menuBtnActive) * 40px);
+  transition: padding 0.5s;
+  background-color: rgb(20, 20, 20);
+  font-size: 2rem;
+}
+#navBar > header > #titleBox > img {
+  width: 22px;
+}
+#navBar > header > nav {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  overflow: scroll;
+  background-color: rgb(50, 50, 50);
+}
+#navBar > header > nav > button {
+  width: 100%;
+  height: 50px;
+  text-align: center;
+  color: inherit;
+  background-color: inherit;
+}
+#navBar > header > nav > button:hover {
+  background-color: rgb(80, 80, 80);
+}
+#navBar > header > nav > button.navSelected {
+  background-color: rgb(100, 150, 230);
+}
+
+body {
+  font-family: sans-serif;
+  background-color: rgb(255, 255, 252);
+}
+
+#titleBar {
+  z-index: 1;
+  width: 100%;
+  height: 120px;
+  transition: margin 0.5s ease-out;
+  display: flex;
+  align-items: center;
+}
+#titleBar > h1 {
+  padding-left: 70px;
+  font-size: 2rem;
+  transition: padding-left 0.5s ease-out;
+}
+
+#mainContent {
+  z-index: 1;
+  width: clamp(300px, 100% - 70px - 40px, 600px);
+  padding: 30px 40px 60px 70px;
+  filter: blur(calc(var(--headerActive) * 3px));
+  transition: margin 0.5s ease-out, padding-left 0.5s ease-out, filter 0.5s ease-out;
+}
+#mainContent > h1 {
+  color: rgb(100, 150, 230);
+  font-size: 1.75rem;
+  padding-bottom: 20px;
+}
+
+@media only screen and (min-width: 910px) {
+  body {
+    --headerActive: 1;
+    --menuBtnActive: 0;
+  }
+  #titleBar {
+    width: calc(100% - 255px);
+    margin-left: 255px;
+  }
+  #titleBar > h1 {
+    padding-left: 30px;
+  }
+  #mainContent {
+    margin-left: 255px;
+    padding-left: 30px;
+    filter: none;
+  }
+}
+
+/*# sourceMappingURL=index.css.map */

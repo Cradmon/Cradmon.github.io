@@ -1,7 +1,4 @@
----
----
-
-@import 'reset';
+@use 'sass:math';
 
 $menuBtnWidth: 40px;
 $menuBtnHeight: 120px;
@@ -11,8 +8,8 @@ $navBarFullWidth: $navBarWidth + $navBarBorderSize;
 
 $bodyBgCol: rgb(255, 255, 252);
 $menuBtnCol: rgb(100, 100, 100);
-$navBarTitleBgCol: rgb(20, 20, 20);
 $navBarCol: rgb(50, 50, 50);
+$navBarTitleBgCol: rgb(20, 20, 20);
 $navBarHoverCol: rgb(80, 80, 80);
 $navBarSelectedCol: rgb(100, 150, 230);
 
@@ -32,7 +29,7 @@ $navBarSelectedCol: rgb(100, 150, 230);
 
 body {
 	--headerActive: 0;
-	background-color: $bodyBgCol;
+	--menuBtnActive: 1;
 }
 
 #navBar {
@@ -40,44 +37,88 @@ body {
 		font-weight: bold;
 	}
 
-	> * {
+	>* {
 		position: fixed;
 	}
 
-	> button {
+	>button {
 		@extend %centerColumn;
 
 		z-index: 3;
 
+		margin-left: calc(-#{$menuBtnWidth} + var(--menuBtnActive) * #{$menuBtnWidth});
 		width: $menuBtnWidth;
 		height: $menuBtnHeight;
 
 		border-radius: 0px 0px calc(5px - (var(--headerActive) * 5px)) 0px;
 
 		color: $menuBtnCol;
+		fill: $menuBtnCol;
 		background-color: $navBarCol;
 
 		transition: margin .5s ease-out, border-radius .5s ease-out;
 
-		> img {
-			height: 20px;
+		#menuIcon {
+			$svgSquareLength: 16;
+			$lineWidth: 2;
+
 			margin-bottom: 10px;
+
+			// +0px to convert to px
+			width: $svgSquareLength +0px;
+			height: $svgSquareLength +0px;
+			transition: d 2s ease-out;
+
+			path:nth-child(1) {
+				d: path(
+					"M 0,0 \
+					h #{$svgSquareLength} \
+					v #{$lineWidth} \
+					h -#{$svgSquareLength} \
+					Z"
+				);
+			}
+
+			path:nth-child(2) {
+				d: path(
+					"M 0,#{math.div(($svgSquareLength - $lineWidth), 2)} \
+					h #{$svgSquareLength} \
+					v #{$lineWidth} \
+					h -#{$svgSquareLength} \
+					Z"
+				);
+			}
+
+			path:nth-child(3) {
+				d: path(
+					"M 0,#{$svgSquareLength - $lineWidth} \
+					h #{$svgSquareLength} \
+					v #{$lineWidth} \
+					h -#{$svgSquareLength} \
+					Z"
+				);
+			}
 		}
 
-		> p {
+		>p {
 			writing-mode: vertical-lr;
 			text-orientation: upright;
 
 			letter-spacing: 2px;
 		}
 
-		&:hover { color: $bodyBgCol; }
+		&:hover {
+			cursor: pointer;
+
+			color: $bodyBgCol;
+			fill: $bodyBgCol;
+		}
 	}
 
-	> header {
+	>header {
 		z-index: 2;
 
-		height: 100%;
+		height: 100vh;
 		width: $navBarWidth;
 		margin-left: calc(-#{$navBarFullWidth} + (var(--headerActive) * #{$navBarFullWidth}));
 		border-right: $navBarBorderSize solid $navBarSelectedCol;
@@ -85,25 +126,22 @@ body {
 		color: $bodyBgCol;
 		transition: margin .5s ease-out;
 
-		> div {
+		>#titleBox {
 			@extend %centerColumn;
 
 			height: $menuBtnHeight;
-			padding-left: $menuBtnWidth;
+			padding-left: calc(var(--menuBtnActive) * #{$menuBtnWidth});
 			transition: padding .5s;
 
 			background-color: $navBarTitleBgCol;
+			font-size: 2rem;
 
-			> img {
+			>img {
 				width: 22px;
-			}
-
-			> p {
-				font-size: 2rem;
 			}
 		}
 
-		> nav {
+		>nav {
 			width: 100%;
 			height: 100%;
 
@@ -114,17 +152,19 @@ body {
 
 			background-color: $navBarCol;
 
-			> a {
+			>button {
 				width: 100%;
+				height: 50px;
 
 				text-align: center;
-				line-height: 50px;
+				color: inherit;
+				background-color: inherit;
 
 				&:hover {
 					background-color: $navBarHoverCol;
 				}
 
-				&#navSelected {
+				&.navSelected {
 					background-color: $navBarSelectedCol;
 				}
 			}
@@ -132,39 +172,3 @@ body {
 	}
 }
 
-#mainContent {
-	z-index: 1;
-
-	box-sizing: border-box;
-	width: 100%;
-	max-width: 600px;
-	padding: 30px 30px 60px ($menuBtnWidth + 10px);
-
-	filter: blur(calc(var(--headerActive) * 3px));
-	transition: margin .5s ease-out, filter .5s ease-out;
-}
-
-@media only screen and (min-width: 850px) {
-	body {
-		--headerActive: 1;
-	}
-
-	#navBar {
-		button {
-			margin-left: -$menuBtnWidth;
-		}
-
-		>header >div {
-			padding-left: 0px;
-		}
-	}
-
-	#mainContent {
-		margin-left: #{$navBarFullWidth};
-		filter: none;
-	}
-}
-
-// * {
-	// font-size: 0px;
-// }
