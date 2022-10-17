@@ -1,106 +1,46 @@
-@use 'sass:math';
+@use 'sass:color';
+@use 'sass/menu';
 
 $menuBtnWidth: 40px;
 $menuBtnHeight: 120px;
 $navBarWidth: 250px;
-$navBarBorderSize: 5px;
-$navBarFullWidth: $navBarWidth + $navBarBorderSize;
 
-$bodyBgCol: rgb(255, 255, 252);
-$menuBtnCol: rgb(100, 100, 100);
-$navBarCol: rgb(50, 50, 50);
-$navBarTitleBgCol: rgb(20, 20, 20);
-$navBarHoverCol: rgb(80, 80, 80);
-$navBarSelectedCol: rgb(100, 150, 230);
-
-%centerRow {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
-}
-
-%centerColumn {
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: center;
-	justify-content: center;
-}
-
-body {
-	--headerActive: 0;
-	--menuBtnActive: 1;
-}
-
-#navBar {
-	* {
-		font-weight: bold;
-	}
-
-	>* {
+@mixin navBar(
+	$menuBtnVisible,
+	$navBarVisible,
+	$navBarBgCol: rgb(50, 50, 50),
+	$textCol: rgb(255, 255, 255, 1),
+) {
+	#menuToggleBtn {
 		position: fixed;
-	}
 
-	>button {
-		@extend %centerColumn;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+		justify-content: center;
 
 		z-index: 3;
 
-		margin-left: calc(-#{$menuBtnWidth} + var(--menuBtnActive) * #{$menuBtnWidth});
 		width: $menuBtnWidth;
 		height: $menuBtnHeight;
+		transform: translateX(calc(#{$menuBtnWidth} * (-1 + #{$menuBtnVisible})));
 
-		border-radius: 0px 0px calc(5px - (var(--headerActive) * 5px)) 0px;
+		border-radius: 0px 0px calc(5px * (1 - #{$navBarVisible})) 0px;
 
-		color: $menuBtnCol;
-		fill: $menuBtnCol;
-		background-color: $navBarCol;
+		color: color.change($textCol, $alpha: .3);
+		fill: color.change($textCol, $alpha: .3);
+		background-color: $navBarBgCol;
 
-		transition: margin .5s ease-out, border-radius .5s ease-out;
+		transition: transform .5s ease-out, border-radius .5s ease-out;
 
-		#menuIcon {
-			$svgSquareLength: 16;
-			$lineWidth: 2;
-
-			margin-bottom: 10px;
-
-			// +0px to convert to px
-			width: $svgSquareLength +0px;
-			height: $svgSquareLength +0px;
-			transition: d 2s ease-out;
-
-			path:nth-child(1) {
-				d: path(
-					"M 0,0 \
-					h #{$svgSquareLength} \
-					v #{$lineWidth} \
-					h -#{$svgSquareLength} \
-					Z"
-				);
-			}
-
-			path:nth-child(2) {
-				d: path(
-					"M 0,#{math.div(($svgSquareLength - $lineWidth), 2)} \
-					h #{$svgSquareLength} \
-					v #{$lineWidth} \
-					h -#{$svgSquareLength} \
-					Z"
-				);
-			}
-
-			path:nth-child(3) {
-				d: path(
-					"M 0,#{$svgSquareLength - $lineWidth} \
-					h #{$svgSquareLength} \
-					v #{$lineWidth} \
-					h -#{$svgSquareLength} \
-					Z"
-				);
-			}
+		.svgMenuIcon {
+			@include menu.menuIcon(16px, $navBarVisible, .5s);
 		}
 
 		>p {
+			margin-top: 10px;
+
+			font-weight: bold;
 			writing-mode: vertical-lr;
 			text-orientation: upright;
 
@@ -108,67 +48,67 @@ body {
 		}
 
 		&:hover {
-			cursor: pointer;
-
-			color: $bodyBgCol;
-			fill: $bodyBgCol;
+			color: $textCol;
+			fill: $textCol;
 		}
 	}
 
-	>header {
-		z-index: 2;
+	#navBar {
+		* {
+			font-weight: bold;
+		}
 
-		height: 100vh;
-		width: $navBarWidth;
-		margin-left: calc(-#{$navBarFullWidth} + (var(--headerActive) * #{$navBarFullWidth}));
-		border-right: $navBarBorderSize solid $navBarSelectedCol;
+		position: fixed;
 
-		color: $bodyBgCol;
-		transition: margin .5s ease-out;
+		color: $textCol;
+		background-color: $navBarBgCol;
 
 		>#titleBox {
-			@extend %centerColumn;
+			display: flex;
+			flex-flow: column nowrap;
+			align-items: center;
+			justify-content: center;
 
 			height: $menuBtnHeight;
-			padding-left: calc(var(--menuBtnActive) * #{$menuBtnWidth});
-			transition: padding .5s;
+			width: 100%;
+			padding-left: calc(#{$menuBtnVisible} * #{$menuBtnWidth});
+			transition: padding-left .5s ease-out;
 
-			background-color: $navBarTitleBgCol;
+			color: inherit;
+			background-color: color.scale($navBarBgCol, $lightness: -50%);
 			font-size: 2rem;
 
 			>img {
-				width: 22px;
+				width: 32px;
 			}
 		}
 
 		>nav {
 			width: 100%;
-			height: 100%;
+			height: calc(100% - #{$menuBtnHeight});
 
 			display: flex;
 			flex-flow: column nowrap;
-			align-items: center;
 			overflow: scroll;
 
-			background-color: $navBarCol;
+			background-color: inherit;
 
 			>button {
 				width: 100%;
-				height: 50px;
+				min-height: 50px;
 
 				text-align: center;
 				color: inherit;
-				background-color: inherit;
+				background-color: transparent;
 
 				&:hover {
-					background-color: $navBarHoverCol;
+					background-color: color.scale($navBarBgCol, $lightness: 10%);
 				}
 
 				&.navSelected {
-					background-color: $navBarSelectedCol;
+					background-color: rgba(100, 150, 230, 1);
 				}
 			}
 		}
 	}
 }
-

@@ -1,6 +1,6 @@
 {
 	"navID": "Contact",
-	"title": "Contact Details",
+	"title": "<h1>Contact Details</h1>",
 	"mainContentText": ["<h1>Name</h1>",
 		"<p>Cradmon</p>"
 	]
