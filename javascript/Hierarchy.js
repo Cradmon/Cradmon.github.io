@@ -1,31 +1,77 @@
-import * as PathFunctions from './PathFunctions.js'
-export * as PathFunctions from './PathFunctions.js'
+import * as Path from './Path.js'
+export * as Path from './Path.js'
 
 class HierarchyNode {
 	#parentNode = null;
 	#isBranch;
-	name;
+	#name = null;
 	data = [];
 
-	set parentNode(newParentNode) {
+	set parentNode(inputParentNode) {
 		if (this.#parentNode) {
 			for (let i = 0; i < this.#parentNode.data.length; ++i) {
-				if (this.#parentNode.data[i] == this) {
+				if (this.#parentNode.data[i] === this) {
 					this.#parentNode.data.splice(i, 1);
 					break;
 				}
 			}
 		}
 
-		if (newParentNode != null) {
-			newParentNode.data.push(this);
+		if (inputParentNode != null) {
+			inputParentNode.data.push(this);
 		}
 
-		this.#parentNode = newParentNode;
+		this.#parentNode = inputParentNode;
+	}
+	get parentNode() { return this.#parentNode; }
+
+	get isBranch() { return this.#isBranch; }
+
+	set name(inputName) {
+		if (!typeof(inputName) === 'string') {
+			throw "Hierarchy: " + inputName + "is not a String."
+		}
+		this.#name = inputName;
+	}
+	get name() { return this.#name; }
+
+	getAbsolutePath() {
+		let iterNode = this;
+		let nodeNames = [iterNode.name];
+		while (iterNode.parentNode != null) {
+			iterNode = iterNode.parentNode;
+			nodeNames.push(iterNode.name);
+		}
+		nodeNames.reverse();
+
+		return new Path(nodeNames, 1, this.#isBranch);
 	}
 
-	get parentNode() { return this.#parentNode; }
-	get isBranch() { return this.#isBranch; }
+	getChildNode(childNodeName) {
+		if (!this.#isBranch) { return null; }
+		for (let i = 0; i < this.data.length; ++i) {
+			if (this.data[i].name === childNodeName) {
+				return this.data[i];
+			}
+		}
+		return null;
+	}
+
+	getNode(path) {
+		if (path.isAbsolute) { return null; }
+		let ret = this;
+		for (let i = 0; i < path.length; ++i) {
+			if (path.at(i) === '..') {
+				ret = ret.parentNode;
+			} else if (path.at(i) === '.') {
+				continue;
+			} else {
+				ret = ret.getChildNode(path.at(i));
+			}
+			if (ret === null) { return null; }
+		}
+		return ret;
+	}
 
 	constructor(inputParentNode, inputName, inputIsBranch = true) {
 		this.parentNode = inputParentNode;
@@ -36,62 +82,24 @@ class HierarchyNode {
 
 export class Hierarchy {
 	#root;
-
 	get root() { return this.#root; }
 
-	generatePathString(node) {
-		let ret = node.name;
-		if (ret.isBranch) {
-			ret += '/';
+	getNode(path) {
+		if (!path.isAbsolute) { return null; }
+		if (path.str === '/' ||
+			(path.isBranch && path.at(0) === this.#root.name)
+		) {
+			return this.#root;
 		}
-		while (node.parentNode != null) {
-			ret = node.parentNode.name + '/' + ret;
-			node = node.parentNode;
+		if (path.length < 2 || path.at(0) !== this.#root.name) {
+			return null;
 		}
-		ret = '/' + ret;
+		let ret = this.#root;
+		for (let i = 1; i < path.length; ++i) {
+			ret = ret.getChildNode(path.at(i));
+			if (ret === null) { return null; }
+		}
 		return ret;
-	}
-
-	#getChildNode(node, childNodeName) {
-		for (let i = 0; i < node.data.length; ++i) {
-			if (node.data[i].name == childNodeName) {
-				return node.data[i];
-			}
-		}
-		return null;
-	}
-
-	getNode(pathString, startNode = this.#root) {
-		if (pathString.startsWith('/')) {
-			if (pathString == '/' ||
-				pathString == '/' + this.#root.name + '/'
-			) {
-				return this.#root;
-			}
-			let path = PathFunctions.stringToArray(pathString);
-			if (path.array.length < 2) { return null; }
-
-			let ret = this.#root;
-			for (let i = 1; i < path.array.length; ++i) {
-				ret = this.#getChildNode(ret, path.array[i]);
-				if (ret == null) { return null; }
-			}
-			return ret;
-		} else {
-			let path = PathFunctions.stringToArray(pathString);
-			let ret = startNode;
-			for (let i = 0; i < path.array.length; ++i) {
-				if (path.array[i] == '..') {
-					ret = ret.parentNode;
-				} else if (path.array[i] == '.') {
-					continue;
-				} else {
-					ret = this.#getChildNode(ret, path.array[i]);
-				}
-				if (ret == null) { return null; }
-			}
-			return ret;
-		}
 	}
 
 	setNodeDataFromArray(pathDataArray) {
@@ -121,7 +129,7 @@ export class Hierarchy {
 				ret.push(new HierarchyNode(parentNode, name, false));
 			}
 		}
-		if (ret.length == 1) {
+		if (ret.length === 1) {
 			return ret[0];
 		} else {
 			return ret;

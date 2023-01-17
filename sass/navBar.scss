@@ -1,5 +1,5 @@
 @use 'sass:color';
-@use 'sass/menu';
+@use 'lib/menu';
 
 $menuBtnWidth: 40px;
 $menuBtnHeight: 120px;
@@ -27,8 +27,8 @@ $navBarWidth: 250px;
 
 		border-radius: 0px 0px calc(5px * (1 - #{$navBarVisible})) 0px;
 
-		color: color.change($textCol, $alpha: .3);
-		fill: color.change($textCol, $alpha: .3);
+		color: color.scale($textCol, $red: -60%, $green: -60%, $blue: -60%);
+		fill: color.scale($textCol, $red: -60%, $green: -60%, $blue: -60%);
 		background-color: $navBarBgCol;
 
 		transition: transform .5s ease-out, border-radius .5s ease-out;
@@ -79,7 +79,7 @@ $navBarWidth: 250px;
 			font-size: 2rem;
 
 			>img {
-				width: 32px;
+				width: calc(100% - 50px);
 			}
 		}
 

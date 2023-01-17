@@ -1,4 +1,6 @@
-import {PathFunctions, Hierarchy} from './Hierarchy.js'
+'use strict';
+
+import {Path, Hierarchy} from './Hierarchy.js'
 import * as StyleSheetFunctions from './StyleSheetFunctions.js'
 
 class NavData {
@@ -6,15 +8,18 @@ class NavData {
 	jsonPath;
 	jsonData = null;
 
+	fetchData(callbackFunc) {
+		fetch(this.jsonPath.str).then(response => {
+			return response.json();
+		}).then(fetchedData => {
+			this.jsonData = fetchedData;
+			callbackFunc(this);
+		});
+	}
+
 	constructor(inputNodePath) {
-		this.nodePath = inputNodePath;
-		this.jsonPath = PathFunctions.getModifiedPath(
-			this.nodePath,
-			[
-				['html', 'json'],
-				[this.nodePath.split('/').at(-1), PathFunctions.getTailName(this.nodePath) + '.json']
-			]
-		);
+		this.nodePath = new Path.Path(inputNodePath);
+		this.jsonPath = this.nodePath.createModifiedPath([['html', 'json'], [this.nodePath.tail, this.nodePath.stem + '.json']]);
 	}
 }
 
@@ -23,44 +28,39 @@ class DataController {
 	#currentNode;
 	#navDataArray;
 
-	#fetchNodeData(navData) {
-		fetch(navData.jsonPath).then(response => {
-			return response.json();
-		}).then(fetchedData => {
-			navData.jsonData = fetchedData;
-			dataReady(navData);
-		});
-	}
-
-	set currentNode(nodePath) {
-		this.#currentNode = this.#hierarchy.getNode(nodePath, this.#currentNode);
+	set currentNode(path) {
+		if (path.isAbsolute) {
+			this.#currentNode = this.#hierarchy.getNode(path);
+		} else {
+			this.#currentNode = this.#currentNode.getNode(path);
+		}
 
 		let navData = null;
 		if (!this.#currentNode.isBranch) {
 			navData = this.#currentNode.data;
-		} else if (this.#currentNode == this.#hierarchy.root) {
+		} else if (this.#currentNode === this.#hierarchy.root) {
 			navData = this.#navDataArray[0];
+		} else {
+			return;
 		}
 
-		if (navData != null) {
-			if (navData.jsonData == null) {
-				navData.jsonData = this.#fetchNodeData(navData);
-			} else {
-				dataReady(navData);
-			}
+		if (navData.jsonData === null) {
+			navData.fetchData(dataReady);
+		} else {
+			dataReady(navData);
 		}
 	}
 
 	get currentNode() { return this.#currentNode; };
 
-	constructor() {
+	constructor(inputCurrentPath = new Path.Path('/')) {
 		this.#navDataArray = [
-			new NavData('/'),
+			new NavData('/html/index'),
 			new NavData('/html/blogs/TheFileSystem_DataNavigation'),
-			new NavData('/html/Portfolio'),
+			new NavData('/html/About'),
 			new NavData('/html/Contact')
 		];
-		this.#navDataArray[0].jsonPath = '/json/index.json'
+		this.#navDataArray[0].nodePath = new Path.Path('/');
 
 		let pathDataArray = [];
 		for (let i = 1; i < this.#navDataArray.length; ++i) {
@@ -74,9 +74,11 @@ class DataController {
 			'html',
 				['blogs',
 					'TheFileSystem_DataNavigation'],
-				'Portfolio',
+				'About',
 				'Contact'
 		], pathDataArray);
+
+		this.currentNode = inputCurrentPath;
 	}
 };
 
@@ -91,47 +93,50 @@ class NavBar {
 	}
 
 	setupBtns() {
-		let htmlContent = "";
 		if (dataController.currentNode.isBranch) {
+			let htmlContent = "";
 			for (let i = 0; i < dataController.currentNode.data.length; ++i) {
 				htmlContent += '<button>' + dataController.currentNode.data[i].name + '</button>';
 			}
+			document.querySelector('nav').innerHTML = htmlContent;
 		}
 
-		document.querySelector('nav').innerHTML = htmlContent;
 		let navBtns = document.querySelectorAll('nav > button');
 		for (let i = 0; i < navBtns.length; ++i) {
-			navBtns[i].addEventListener('click', (event) => {
-				if (!dataController.currentNode.isBranch) {
-					if (navBtns[i].innerHTML == dataController.currentNode.name) {
-					dataController.currentNode = '.';
+			if (dataController.currentNode.data[i].isBranch) {
+				navBtns[i].addEventListener('click', (event) => {
+					let pathStr = '';
+					if (!dataController.currentNode.isBranch) {
+						pathStr = '../' + dataController.currentNode.parentNode.data[i].name;
 					} else {
-						dataController.currentNode = '../' + dataController.currentNode.parentNode.data[i].name;
-						if (dataController.currentNode.isBranch) {
-							this.setupBtns();
-						}
+						pathStr = dataController.currentNode.data[i].name;
 					}
-				} else if (dataController.currentNode.data[i].isBranch) {
-					dataController.currentNode = dataController.currentNode.data[i].name;
+					dataController.currentNode = new Path.Path(pathStr);
 					this.setupBtns();
-				} else {
-					dataController.currentNode = dataController.currentNode.data[i].name;
-				}
-			});
+				});
+			} else {
+				navBtns[i].addEventListener('click', (event) => {
+					let pathStr = '';
+					if (!dataController.currentNode.isBranch) {
+						pathStr = '../' + dataController.currentNode.parentNode.data[i].name;
+					} else {
+						pathStr = dataController.currentNode.data[i].name;
+					}
+					dataController.currentNode = new Path.Path(pathStr);
+				});
+			}
 		}
 	}
 
-	constructor(pathString) {
+	constructor() {
 		document.querySelector('#menuToggleBtn').addEventListener(
 			'click',
-			() => {
-				StyleSheetFunctions.toggleValue(document.styleSheets[0], 'body', '--navBarVisible', '0', '1');
-			}
+			this.toggleVisible
 		);
 
 		let homeBtn = document.querySelector('#titleBox');
 		homeBtn.addEventListener('click', (event) => {
-			dataController.currentNode = '/';
+			dataController.currentNode = new Path.Path('/');
 			this.setupBtns();
 		});
 
@@ -140,8 +145,8 @@ class NavBar {
 };
 
 function dataReady(navData) {
-	if (navData.nodePath == dataController.currentNode.data.nodePath ||
-		(navData.nodePath == '/' && dataController.currentNode.name == 'html')) {
+	if (navData.nodePath === dataController.currentNode.data.nodePath ||
+		(navData.nodePath.str === '/' && dataController.currentNode.name === 'html')) {
 		setupMainContent(navData);
 		navBar.setVisible(false);
 	}
@@ -166,9 +171,7 @@ let navBar;
 // Setup Function
 (function () {
 	dataController = new DataController();
-	dataController.currentNode = '/';
-
-	navBar = new NavBar(window.location.pathname);
+	navBar = new NavBar();
 
 	// Button Events
 	window.addEventListener('popstate', (event) => {
