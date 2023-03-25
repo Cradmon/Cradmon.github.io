@@ -1,5 +1,8 @@
-.jekyll-cache
-.jekyll-metadata
-build/*
-
 .startServer.zsh
+/build
+buildFilePaths.txt
+/FetchedHtml
+/html
+/images
+/javascript
+/sass
