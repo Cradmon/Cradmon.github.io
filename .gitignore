@@ -1,5 +1,4 @@
 .startServer.zsh
-/build
 buildFilePaths.txt
 /FetchedHtml
 /html

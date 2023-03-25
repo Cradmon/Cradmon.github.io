@@ -1,0 +1,84 @@
+<h2>Introduction</h2>
+<p>The price and accessibility of digital storage makes it easier than ever to save all the data we desire. When we find ourselves with excess storage, its logical to err on the side of caution and save any and all data. However, this leads to a greater accumulation of data, which has the side effect of making navigation more complex. If we ignore this side effect, we will slowly but surely waste energy, making us less productive and leaving us feeling overwhelmed.</p>
+<p>We shouldn't limit the amount of data we save, but we should be aware of the negative impact caused by growing data and the actions we can take to minimise this impact. With this objective in mind, this guide has been written to:</p>
+<ul>
+	<li>Highlight the issue of navigating larger datasets at the personal computer level.</li>
+	<li>Analyse the tools of the File System to showcase their navigational designs.</li>
+	<li>Outline an iterative process that we can adopt and customise to maintain a healthy navigational environment.</li>
+	<li>Demonstrate useful strategies that improve common navigational inefficiencies.</li>
+</ul>
+
+<p>This guide discusses the issue of navigating growing data and how the File System is designed to handle it. The short answer is that the File System passes most of that responsibility on to you, the user, since the optimal navigational solution is highly dependent on the data and the users who interact with the data. Although this means more work for you, it also means you have the power to control your navigational experience. This guide is here to help you gain a greater insight into the navigational landscape and place you in a better position to construct more effective navigational structures.</p>
+
+<h2>The Navigational Issue of Growing Data</h2>
+<p>To describe this issue, we are going to use 2 examples to aid us:</p>
+
+<h3>Example 1</h3>
+<p>Lets say we have a list of files:</p>
+<ul>
+	<li>Apple.aac</li>
+	<li>Pear.png</li>
+	<li>Banana.blend</li>
+</ul>
+<p>and we ask these questions:</p>
+<ul>
+	<li>is Apple.aac on the list?</li>
+	<li>is Cherry.css on the list?</li>
+	<li>is Pear.png on the list?</li>
+</ul>
+
+<h3>Example 2</h3>
+<p>Lets say we have a longer list of files:</p>
+<ul>
+	<li>Apple.aac</li>
+	<li>Fig.flac</li>
+	<li>Kiwi.kra</li>
+	<li>Potato.png</li>
+	<li>Banana.blend</li>
+	<li>Zucchini.zip</li>
+	<li>Strawberry.svg</li>
+	<li>Carrot.css</li>
+	<li>Squash.svg</li>
+	<li>Lettuce.lz</li>
+	<li>Broccoli.blend</li>
+	<li>Avocado.aac</li>
+	<li>Pear.png</li>
+	<li>Raspberry.raw</li>
+	<li>Mushroom.mov</li>
+	<li>Leek.lz</li>
+	<li>Peach.png</li>
+	<li>Grape.gz</li>
+	<li>Celery.css</li>
+	<li>Mango.mov</li>
+	<li>Spinach.svg</li>
+	<li>Cabbage.css</li>
+	<li>Cress.css</li>
+	<li>Orange.ogg</li>
+	<li>Tomato.tiff</li>
+	<li>Blueberry.blend</li>
+	<li>Cauliflower.css</li>
+	<li>Pomegranage.png</li>
+</ul>
+<p>and we ask these questions:</p>
+<ul>
+	<li>is Apple.aac on the list?</li>
+	<li>is Cherry.css on the list?</li>
+	<li>is Pear.png on the list?</li>
+</ul>
+
+<p>If you tried the examples, I hope we can agree that Example 1 is <i>easier</i> to complete than Example 2. Yep. Good. Okay, but identifying it as easier is only the first step. To grasp the secrets of <i>easy</i> navigation, we need to figure out what aspects contribute to this difference.</p>
+
+<p>Before we identify some aspects, it helps to have a more precise definition of <i>easy</i> navigation. As it stands, <i>easy</i> navigation could be measured by the speed it takes to navigate the data. While this somewhat represents the changes in navigation, I think there is a more helpful way to measure differences in navigation. I propose, assessing changes in navigation through the lens of how much energy we need to use to complete the task. If we look at our 2 examples, we could take the same amount of time to complete each, which would suggest there is no difference in terms of navigation, however if we view it from the point of energy usage, example 2 will always require the same or more energy to complete. Which makes Example 1 the easier example to complete.</p>
+
+<p>If we look at the examples question by question. The first question, finding Apple.aac is what is called the best case scenario. This is because most of us will navigate lists from the top left and we find Apple.aac immediately as it is the first item. If we compared example 1 and example 2 based on this first question, there would be a minimal difference between them.</p>
+
+<p>Moving on to the second question, finding Cherry.css, we are looking at the worse case scenario. Since Cherry.css is not in the list, we need to check all items to verify it doesn't exist. Comparing the examples, our energy consumption in example 1 is noticeably less than example 2. This question highlights the negative issue we are trying to demonstrate, but as we've seen with question 1, isn't the whole picture.</p>
+
+<p>The last question of the examples, finding Pear.png, is the average case scenario. The item we are looking for is in the middle of the dataset. When we compare our energy usage, we see it resides somewhere in between question 1 and question 2. So we can deduce that the amount of energy we need is dependant on where the data resides in the dataset and the way we choose to navigate the dataset.</p>
+
+<p>I hope these examples give you a clearer picture of where larger datasets have navigational inefficiencies. There is also the issue of us users making a mistake and having to double or triple check ourselves. These mistakes amplify the negative effects we have experienced in these examples, causing us to use more energy that would be better spent elsewhere.</p>
+
+<p>These examples are small in scale, but I hope they demonstrate the issue effectively. I'm sure you have had experiences with much larger datasets that this issue can be observed. If you can relate, you'll agree that as the dataset grows in scale, this issue gets progressively worse. Theoretically, if we ignored this issue and continued to grow our data we would eventually be spending all our energy on navigating our data. Although, before that happens, most of us will have either given up using that data or found a way to improve our situation.</p>
+
+<p>The rest of this guide is here to provide a starting point as to how we can maintain a good navigational environment. It will focus on data in the File System and the challenges therein, but some of the theory can be extrapolated to navigating data in general. The real challenge is preventing us, as humans, from becoming overwhelmed by navigating data, whilst being able to save as much data as we need.</p>
+

@@ -1,0 +1,212 @@
+* {
+  margin: 0px;
+  border: 0px;
+  padding: 0px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+html, body {
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+body {
+  --navBarVisible: 0;
+  --menuBtnVisible: 1;
+  font-family: "times new roman", sans-serif;
+  background-color: rgb(255, 255, 252);
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 150;
+}
+
+.slideBarLayout {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip-path: content-box;
+}
+.slideBarLayout > *:nth-child(1) {
+  position: absolute;
+  z-index: 2;
+  transform-origin: 0 0;
+  width: 250px;
+  height: 100%;
+  transition: left 0.5s ease-out;
+  left: calc(250px * (-1 + clamp(0, var(--navBarVisible), 1)));
+}
+.slideBarLayout > *:nth-child(2) {
+  position: absolute;
+  z-index: 1;
+  overflow: scroll;
+  width: calc(100% - 250px * var(--navBarVisible) * calc(1 - var(--menuBtnVisible)));
+  height: 100%;
+  transition: left 0.5s ease-out, width 0.5s ease-out;
+  left: calc(250px * var(--navBarVisible) * calc(1 - var(--menuBtnVisible)));
+}
+
+#menuToggleBtn {
+  position: fixed;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  width: 40px;
+  height: 120px;
+  transform: translateX(calc(40px * (-1 + var(--menuBtnVisible))));
+  border-radius: 0px 0px calc(5px * (1 - var(--navBarVisible))) 0px;
+  color: #666665;
+  fill: #666665;
+  background-color: rgb(50, 50, 50);
+  transition: transform 0.5s ease-out, border-radius 0.5s ease-out;
+}
+#menuToggleBtn .svgMenuIcon {
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+}
+#menuToggleBtn .svgMenuIcon rect {
+  x: -3.313708499px;
+  width: 22.627416998px;
+  height: 2px;
+  transform-origin: 50% 50%;
+}
+#menuToggleBtn .svgMenuIcon rect:nth-child(2) {
+  y: 7px;
+}
+#menuToggleBtn .svgMenuIcon rect:nth-child(1) {
+  y: calc(7px * var(--navBarVisible));
+  transform: rotate(calc(var(--navBarVisible) * 45deg));
+}
+#menuToggleBtn .svgMenuIcon rect:nth-child(2) {
+  opacity: calc(100% * (1 - var(--navBarVisible)));
+  transition: opacity 0s linear 0.25s;
+}
+#menuToggleBtn .svgMenuIcon rect:nth-child(3) {
+  y: calc(7px * (2 - var(--navBarVisible)));
+  transform: rotate(calc(var(--navBarVisible) * -45deg));
+}
+#menuToggleBtn .svgMenuIcon rect:nth-child(1), #menuToggleBtn .svgMenuIcon rect:nth-child(3) {
+  transition: y 0.25s linear calc(0.25s * (1 - var(--navBarVisible))), transform 0.25s linear calc(var(--navBarVisible) * 0.25s);
+}
+#menuToggleBtn > p {
+  margin-top: 10px;
+  font-weight: bold;
+  writing-mode: vertical-lr;
+  text-orientation: upright;
+  letter-spacing: 2px;
+}
+#menuToggleBtn:hover {
+  color: rgb(255, 255, 252);
+  fill: rgb(255, 255, 252);
+}
+
+#navBar {
+  position: fixed;
+  color: rgb(255, 255, 252);
+  background-color: rgb(50, 50, 50);
+}
+#navBar * {
+  font-weight: bold;
+}
+#navBar > #titleBox {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  width: 100%;
+  padding-left: calc(var(--menuBtnVisible) * 40px);
+  transition: padding-left 0.5s ease-out;
+  color: inherit;
+  background-color: #191919;
+  font-size: 2rem;
+}
+#navBar > #titleBox > img {
+  width: calc(100% - 50px);
+}
+#navBar > nav {
+  width: 100%;
+  height: calc(100% - 120px);
+  display: flex;
+  flex-flow: column nowrap;
+  overflow: scroll;
+  background-color: inherit;
+}
+#navBar > nav > button {
+  width: 100%;
+  min-height: 50px;
+  text-align: center;
+  color: inherit;
+  background-color: transparent;
+}
+#navBar > nav > button:hover {
+  background-color: #474747;
+}
+#navBar > nav > button.navSelected {
+  background-color: rgb(100, 150, 230);
+}
+
+#mainContent {
+  filter: blur(calc(var(--navBarVisible) * 3px));
+  transition: transform 0.5s ease-out, margin-left 0.5s ease-out, filter 0.5s ease-out;
+}
+#mainContent #titleBar {
+  margin-left: auto;
+  width: calc(100% - (1 + var(--menuBtnVisible)) * 40px);
+  height: 120px;
+  transition: width 0.5s ease-out;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+}
+#mainContent #content {
+  margin-left: calc(40px + var(--menuBtnVisible) * 40px / 2);
+  margin-right: 40px;
+  max-width: 700px;
+  line-height: 1.4;
+  transition: margin-left 0.5s ease-out;
+}
+#mainContent #content > h2 {
+  padding-bottom: 5px;
+}
+#mainContent #content > h2:nth-child(n+2) {
+  padding-top: 15px;
+}
+#mainContent #content > p + p {
+  text-indent: 1cm;
+}
+#mainContent #content ul {
+  padding-top: 0.2cm;
+  padding-bottom: 0.2cm;
+  margin-left: 1cm;
+}
+
+@media only screen and (min-width: 910px) {
+  body {
+    --navBarVisible: 1;
+    --menuBtnVisible: 0;
+  }
+  #mainContent {
+    filter: none;
+  }
+}
+
+/*# sourceMappingURL=index.css.map */
