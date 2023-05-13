@@ -1,171 +1,172 @@
-import {Path, Hierarchy} from './lib/Hierarchy.js'
+import {Path} from './lib/Path.js'
+import {Hierarchy} from './lib/Hierarchy.js'
 import * as StyleSheetFunctions from './lib/StyleSheetFunctions.js'
 
-class PageData {
-	nodePath;
-	pagePath;
-	fetchedHtmlPath;
-	fetchedHtml = null;
-	fetchedCssPath;
-	fetchedCss = null;
-
-	fetchData(callbackFunc) {
-		fetch(this.fetchedHtmlPath.str).then(response => {
-			return response.text();
-		}).then(fetchedData => {
-			this.fetchedHtml = fetchedData;
-			callbackFunc(this);
-		});
-	}
-
-	constructor(inputNodePath) {
-		this.nodePath = new Path.Path(inputNodePath);
-		this.pagePath = new Path.Path('/html' + this.nodePath.str + '.html');
-		this.fetchedHtmlPath = new Path.Path('/FetchedHtml' + this.nodePath.str + '.html');
-		this.fetchedCssPath = new Path.Path('/css' + this.nodePath.str + '.css');
-	}
-}
-
-class DataController {
-	#hierarchy;
-	#currentNode;
-	#pageDataArray;
-
-	set currentNode(path) {
-		if (path.isAbsolute) {
-			this.#currentNode = this.#hierarchy.getNode(path);
-		} else {
-			this.#currentNode = this.#currentNode.getNode(path);
-		}
-
-		let pageData;
-		if (!this.#currentNode.isBranch) {
-			pageData = this.#currentNode.data;
-		} else if (this.#currentNode.parentNode === null) {
-			pageData = this.#pageDataArray[0];
-		} else {
-			return;
-		}
-
-		if (pageData.fetchedHtml === null) {
-			pageData.fetchData(dataReady);
-		} else {
-			dataReady(pageData);
-		}
-	}
-
-	get currentNode() { return this.#currentNode; }
-
-	constructor(inputCurrentPath = new Path.Path('/')) {
-		this.#pageDataArray = [
-			new PageData('/index'),
-			new PageData('/blogs/TheFileSystem_DataNavigation'),
-			new PageData('/About'),
-			new PageData('/Contact')
-		];
-		this.#pageDataArray[0].pagePath = new Path.Path('/');
-
-		let pathDataArray = [];
-		for (let i = 1; i < this.#pageDataArray.length; ++i) {
-			pathDataArray.push([
-				this.#pageDataArray[i].nodePath,
-				this.#pageDataArray[i]
-			]);
-		};
-
-		this.#hierarchy = new Hierarchy([
-			['blogs',
-				'TheFileSystem_DataNavigation'],
-			'About',
-			'Contact'
-		], pathDataArray);
-
-		this.currentNode = inputCurrentPath;
-	}
-};
+import {PageData, PageDataController} from './lib/PageNavigation.js'
 
 class NavBar {
+	#pageDataController;
+	#homeNode;
+	#currentNode;
+
+	#rootDomNode = document.getElementById('mainNav');
+	#backBtnDomNode;
+	#navDomNode;
+
+	#navBtnPool = [];
+
+	#cssomNavBarVisible;
+
+	set currentNode(hierarchyNode) {
+		if (hierarchyNode === null) {
+			this.#pageDataController.currentPageNode = null;
+			this.#currentNode = this.#homeNode;
+		} else {
+			this.#currentNode = hierarchyNode;
+		}
+
+		// Setup BackBtn
+		if (this.#currentNode == this.#homeNode) {
+			this.#backBtnDomNode.firstElementChild.children[1].innerHTML = '';
+		} else {
+			this.#backBtnDomNode.firstElementChild.children[1].innerHTML = this.#currentNode.name;
+		}
+
+		// Setup ChildBtns
+		this.#navDomNode.replaceChildren();
+		if (this.#currentNode.isBranch) {
+			for (let i = 0; i < this.#currentNode.data.length; ++i) {
+				this.#navBtnPool[i].innerHTML = formatTitle(this.#currentNode.data[i].name);
+				this.#navDomNode.append(this.#navBtnPool[i]);
+			}
+		} else {
+			this.#pageDataController.currentPageNode = this.#currentNode;
+		}
+	}
+	get currentNode() { return this.#currentNode; }
+
 	setVisible(isVisible) {
 		isVisible = (isVisible) ? '1' : '0';
-		StyleSheetFunctions.setValue('/css/index.css', 'body', '--navBarVisible', isVisible);
+		this.#cssomNavBarVisible.style.setProperty('--navBarVisible', isVisible);
 	}
 
 	toggleVisible() {
-		StyleSheetFunctions.toggleValue('/css/index.css', 'body', '--navBarVisible', '0', '1');
+		let setVal = '1';
+		if (this.#cssomNavBarVisible.style.getPropertyValue('--navBarVisible') == setVal) {
+			setVal = '0';
+		}
+		this.#cssomNavBarVisible.style.setProperty('--navBarVisible', setVal);
 	}
 
-	setupBtns() {
-		let branchNode = dataController.currentNode;
-		if (!branchNode.isBranch) {
-			branchNode = branchNode.parentNode;
-		}
-
-		let htmlContent = "";
-		for (let i = 0; i < branchNode.data.length; ++i) {
-			htmlContent += '<button>' + branchNode.data[i].name + '</button>';
-		}
-		document.querySelector('nav').innerHTML = htmlContent;
-
-		let navBtns = document.querySelectorAll('nav > button');
-		for (let i = 0; i < navBtns.length; ++i) {
-			let relativePathStr = branchNode.data[i].name;
-			if (!(branchNode === dataController.currentNode)) {
-				relativePathStr = '../' + relativePathStr;
+	navBtnFunc(eventObj) {
+		let index = 0;
+		while (index < this.#currentNode.data.length) {
+			if (this.#navBtnPool[index] == eventObj.currentTarget) {
+				break;
 			}
-			navBtns[i].addEventListener('click', (event) => {
-				dataController.currentNode = new Path.Path(relativePathStr);
-				this.setupBtns();
-				if (!dataController.currentNode.isBranch) {
-					history.pushState({}, "", dataController.currentNode.data.pagePath.str);
-				}
-			});
+			++index;
+		}
+		this.currentNode = this.#currentNode.data[index];
+		if (!this.#currentNode.isBranch ||
+			this.#currentNode === this.#pageDataController.hierarchy.getNode(new Path('/'))
+		) {
+			this.#pageDataController.currentPageNode = this.#currentNode;
+			history.pushState({}, "", this.#currentNode.data.pagePath.str);
 		}
 	}
 
-	constructor() {
-		document.querySelector('#menuToggleBtn').addEventListener(
+	constructor(pageDataController, currentPath) {
+		this.#pageDataController = pageDataController;
+		this.#homeNode = this.#pageDataController.hierarchy.root;
+		this.#backBtnDomNode = this.#rootDomNode.children[1].children[1];
+		this.#navDomNode = this.#rootDomNode.children[1].children[2];
+		this.#cssomNavBarVisible = StyleSheetFunctions.findRule('/css/Global.css', 'body');
+
+		for (let i = 0; i < 10; ++i) {
+			let btn = document.createElement("button");
+			btn.addEventListener('click', this.navBtnFunc.bind(this));
+			this.#navBtnPool.push(btn);
+		}
+
+		let node = this.#pageDataController.hierarchy.getNode(currentPath);
+		if (node === this.#homeNode) {
+			this.#pageDataController.currentPageNode = this.#homeNode;
+		}
+		this.currentNode = node;
+
+		this.#rootDomNode.children[0].addEventListener(
 			'click',
-			this.toggleVisible
+			this.toggleVisible.bind(this)
 		);
 
-		let homeBtn = document.querySelector('#titleBox');
-		homeBtn.addEventListener('click', (event) => {
-			dataController.currentNode = new Path.Path('/');
-			this.setupBtns();
+		this.#rootDomNode.children[1].children[0].children[0].addEventListener('click', (event) => {
+			this.currentNode = this.#homeNode;
+			this.#pageDataController.currentPageNode = this.#homeNode;
 			history.pushState({}, "", '/');
 		});
 
-		this.setupBtns();
+		this.#backBtnDomNode.addEventListener('click', (event) => {
+			if (this.#currentNode != null &&
+				this.#currentNode.parentNode != null
+			) {
+				this.currentNode = this.#currentNode.parentNode;
+			}
+		})
 	}
 };
 
+function formatTitle(title) {
+	let ret = title[0];
+	for (let i = 1; i < title.length; ++i) {
+		if (title[i] == '_') {
+			ret += ' - ';
+		} else if (title[i] == title[i].toUpperCase()) {
+			ret += ' ' + title[i];
+		} else {
+			ret += title[i];
+		}
+	}
+	return ret;
+}
+
 function dataReady(pageData) {
-	if (pageData === dataController.currentNode.data ||
-		(dataController.currentNode.parentNode === null &&
-			pageData.nodePath.str === '/index')
-	) {
-		setupMainContent(pageData);
+	if (pageDataController.currentPageData == pageData) {
+		document.adoptedStyleSheets = [pageData.cssStyleSheet];
+		let mainContentNode = document.getElementById('mainContent');
+		pageTitleDomNode.innerHTML = formatTitle(pageData.fileSystemPath.tail);
+		mainContentNode.replaceChild(pageData.fetchedHtmlNodes[0], mainContent.children[1]);
+		mainContentNode.scrollTop = 0;
 		navBar.setVisible(false);
 	}
 }
 
-function setupMainContent(pageData) {
-	document.querySelector('#mainContent #titleBar').innerHTML = '<h1>' + pageData.nodePath.tail + '</h1>';
-	document.querySelector('#mainContent #content').innerHTML = pageData.fetchedHtml;
-	document.querySelector('.slideBarLayout >:nth-child(2)').scrollTop = 0;
-}
-
-let dataController;
+let pageDataController;
 let navBar;
+let pageTitleDomNode;
 // Setup Function
 (function () {
-	let navPath = (window.location.pathname.startsWith('/html/')) ? window.location.pathname.substring(5, window.location.pathname.length - 5) : '/';
-	dataController = new DataController(new Path.Path(navPath));
-	navBar = new NavBar();
+	let navPath = new Path((window.location.pathname.startsWith('/html/')) ? window.location.pathname.substring(5, window.location.pathname.length - 5) : window.location.pathname);
+	pageDataController = new PageDataController([
+		['blogs',
+			'TheFileSystem_DataNavigation'
+		],
+		'About',
+		'Contact'
+	],
+	dataReady
+	);
+
+	navBar = new NavBar(pageDataController, navPath);
+
+	pageTitleDomNode = document.createElement('h1');
+	document.getElementById('mainContent').children[0].append(pageTitleDomNode);
 
 	addEventListener('popstate', (event) => {
-		let navPath = (window.location.pathname.startsWith('/html/')) ? window.location.pathname.substring(5, window.location.pathname.length - 5) : '/';
-		dataController.currentNode = new Path.Path(navPath);
-		navBar.setupBtns();
+		let navPath = new Path((window.location.pathname.startsWith('/html/')) ? window.location.pathname.substring(5, window.location.pathname.length - 5) : window.location.pathname);
+		let destNode = pageDataController.hierarchy.getNode(navPath);
+		if (destNode == pageDataController.hierarchy.root) {
+			pageDataController.currentPageNode = destNode;
+		}
+		navBar.currentNode = pageDataController.hierarchy.getNode(navPath);
 	});
 })();
