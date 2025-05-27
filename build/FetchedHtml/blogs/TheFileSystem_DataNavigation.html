@@ -1,77 +1,57 @@
-<h2>Introduction</h2>
+<div>
+	<h1>The File System</h1>
+	<h1>Data Navigation</h1>
+</div>
 
-<p>Imagine I came along and wiped all of the saved data off of your devices, including any backups; and continuously deleted any data you save in the future. What would it be worth to you, to be able to save data again?</p>
-<p>Don't worry, this is not something I would do, but as a thought experiment it highlights the value of a mundane feature we users take for granted.
-While saving data is a valuable feature, it necessitates the need to navigate that saved data, which could benefit from the ability to organise that saved data. Although perhaps the most important addition to saving data would be the security features protecting our data, after all we'd want to keep our data loss nightmares at bay. Considering the functionality surrounding saved data we could use a system that handles 'everything saved data'. This is the job of File System.</p>
-<p>In essence the File System is the piece of software that makes saving data viable. Its role in providing dependable saving features is valuable to us users, yet it hardly gets any praise and instead gets plenty of flak when it prevents users from taking dangerous actions. The remedy for this situation is to experience what the File System is doing behind the scenes. If you are like me, learning about the File System will create a newfound appreciation and respect for the way it goes about protecting our data.</p>
-<p>Of course, I realise that the work a computer does is of lesser concern to us than the work we have to do. So I've decided to focus this series on the organisational aspects of the File System, allowing us to organise our data more effectively. If it also happens to highlight the careful design of the File System, that is just a bonus.</p>
+<div>
+	<h2>Introduction</h2>
 
-<h2>The Navigational Issue of Growing Data</h2>
-<p>To describe this issue, we are going to use 2 examples to aid us:</p>
+	<p>
+	One day I was talking with my colleague Bob, about the best name for a file in our project. I was winning the argument but Bob is not someone who is gracious in defeat. In an attempt to get in one last quip he announced "Do you even know what the File System is?". My fumbling response told Bob everything he needed to know and as our conversation came to a close, we both knew who was victorious.
+	</p>
 
-<h3>Example 1</h3>
-<p>Lets say we have a list of files:</p>
-<ul>
-	<li>Apple.aac</li>
-	<li>Pear.png</li>
-	<li>Banana.blend</li>
-</ul>
-<p>and we ask these questions:</p>
-<ul>
-	<li>is Apple.aac on the list?</li>
-	<li>is Cherry.css on the list?</li>
-	<li>is Pear.png on the list?</li>
-</ul>
+	<p>
+	As much as I despise losing to Bob, my mind was fixated on failure. My failure to answer such a basic question. When it comes to the File System there is only one way to describe myself. I am an idiot. Although, this is somewhat comforting, I've been an idiot most of my life and as an experienced idiot I know the steps I must take to move forward. So over the next few years I began taking the File System seriously. I finally began answering the questions I used to ignore and when those questions forced me to dive deeper into the File System, that is where I discovered the most impactful knowledge. Over the years my reasoning for decisions I made in the File System became less flimsy, but there was only one way for me to test the progress I had made. I needed Bob to interrogate me. If I could withstand his interrogation and defeat the barrage of questions he would fire at me, I would finally acknowledge I am no longer an idiot.
+	</p>
 
-<h3>Example 2</h3>
-<p>Lets say we have a longer list of files:</p>
-<ul>
-	<li>Apple.aac</li>
-	<li>Fig.flac</li>
-	<li>Kiwi.kra</li>
-	<li>Potato.png</li>
-	<li>Banana.blend</li>
-	<li>Zucchini.zip</li>
-	<li>Strawberry.svg</li>
-	<li>Carrot.css</li>
-	<li>Squash.svg</li>
-	<li>Lettuce.lz</li>
-	<li>Broccoli.blend</li>
-	<li>Avocado.aac</li>
-	<li>Pear.png</li>
-	<li>Raspberry.raw</li>
-	<li>Mushroom.mov</li>
-	<li>Leek.lz</li>
-	<li>Peach.png</li>
-	<li>Grape.gz</li>
-	<li>Celery.css</li>
-	<li>Mango.mov</li>
-	<li>Spinach.svg</li>
-	<li>Cabbage.css</li>
-	<li>Cress.css</li>
-	<li>Orange.ogg</li>
-	<li>Tomato.tiff</li>
-	<li>Blueberry.blend</li>
-	<li>Cauliflower.css</li>
-	<li>Pomegranage.png</li>
-</ul>
-<p>and we ask these questions:</p>
-<ul>
-	<li>is Apple.aac on the list?</li>
-	<li>is Cherry.css on the list?</li>
-	<li>is Pear.png on the list?</li>
-</ul>
+	<p>
+	As I began talking to Bob, it was easy enough to direct the conversation onto the File System and to start the interrogation. As Bob asked me question after question, and I responded with well thought out responses, it came to my attention that Bob was not as aggressive with his questioning as I thought he would be. It was less like an interrogation and more like a curious mind seeking knowledge. At the end of this conversation Bob had this to say, "Listening to your answers, I'm finally beginning to glimpse the role of the File System. I've never been able to view it in such a well structured manner. I don't know how many people there are out there who've used the File System for years and struggle to answer basic questions surrounding it, but I believe the knowledge you've imparted to me would be greatly appreciated by those individuals. Have you ever thought of creating a blog or a website to share this knowledge?"
+	</p>
 
-<p>If you tried the examples, I hope we can agree that Example 1 is <i>easier</i> to complete than Example 2. Yep. Good. Okay, but identifying it as easier is only the first step. To grasp the secrets of <i>easy</i> navigation, we need to figure out what aspects contribute to this difference.</p>
+	<p>
+	The suggestion that Bob made that day is finally coming to fruition. This series is our beginners guide to understanding the File System. I hope that this knowledge is as fruitful to you as it has been to Bob and myself.
+	</p>
 
-<p>Before we identify some aspects, it helps to have a more precise definition of <i>easy</i> navigation. As it stands, <i>easy</i> navigation could be measured by the speed it takes to navigate the data. While this somewhat represents the changes in navigation, I think there is a more helpful way to measure differences in navigation. I propose, assessing changes in navigation through the lens of how much energy we need to use to complete the task. If we look at our 2 examples, we could take the same amount of time to complete each, which would suggest there is no difference in terms of navigation, however if we view it from the point of energy usage, example 2 will always require the same or more energy to complete. Which makes Example 1 the easier example to complete.</p>
+	<button class="fileBrowserInitBtn">
+	</button>
 
-<p>If we look at the examples question by question. The first question, finding Apple.aac is what is called the best case scenario. This is because most of us will navigate lists from the top left and we find Apple.aac immediately as it is the first item. If we compared example 1 and example 2 based on this first question, there would be a minimal difference between them.</p>
+	<h2>What is the File System?</h2>
 
-<p>Moving on to the second question, finding Cherry.css, we are looking at the worse case scenario. Since Cherry.css is not in the list, we need to check all items to verify it doesn't exist. Comparing the examples, our energy consumption in example 1 is noticeably less than example 2. This question highlights the negative issue we are trying to demonstrate, but as we've seen with question 1, isn't the whole picture.</p>
+	<p>
+	To define the File System it is best to start with save data. Save data is a feature that we've come to expect from computers. It allows us to keep data around for a longer period of time than would otherwise be possible. In a world void of save data our data would be temporary; you may have some experience of this if you've ever lost data.
+	So I hope we can agree that save data is a feature that is worth pursuing. However, in order to provide that feature we need to solve a number of problems. Some of these problems relate to hardware and some relate to software. The most successful solution to the software related problems is built around a core concept we call a file. This is why we call it 'The File System'.
+	Hence the File System is software that is necessary if we want to save data. For the most part we trust it, because it has been reliable time and time again. Data corruption isn't something we experience often because the File System ensures our data 
+	</p>
 
-<p>The last question of the examples, finding Pear.png, is the average case scenario. The item we are looking for is in the middle of the dataset. When we compare our energy usage, we see it resides somewhere in between question 1 and question 2. So we can deduce that the amount of energy we need is dependant on where the data resides in the dataset and the way we choose to navigate the dataset.</p>
+	<p>
+	The File System wouldn't exist if we didn't have a need to save data.
+	It is impossible to define the File System without talking about save data.
+	To define the File System let's begin by thinking about how computers save data. For a computer to provide this saving feature it must overcome a number of problems. Some are hardware related and some are software related. If we solve all the software related problems we will end up with a save system, which comprises of those solutions.
+	</p>
 
-<p>I hope these examples give you a clearer picture of where larger datasets have navigational inefficiencies. There is also the issue of us users making a mistake and having to double or triple check ourselves. These mistakes amplify the negative effects we have experienced in these examples, causing us to use more energy that would be better spent elsewhere.</p>
+	<p>
+	Lets take a deeper look into how a computer goes about saving data. For us to save data on a computer, hardware problems and software problems need to be solved. The software problems require a combination of solutions, and the File System is one such combination.
+	In order to save data on your computer a number of problems need to be solved. Some of those problems are hardware related and some of those problems are software related. The File System is a bunch of solutions to the software related problems we need to overcome in order to save data.
+	</p>
 
-<p>These examples are small in scale, but I hope they demonstrate the issue effectively. I'm sure you have had experiences with much larger datasets that this issue can be observed. If you can relate, you'll agree that as the dataset grows in scale, this issue gets progressively worse. Theoretically, if we ignored this issue and continued to grow our data we would eventually be spending all our energy on navigating our data. Although, before that happens, most of us will have either given up using that data or found a way to improve our situation.</p>
+	<h2>What is a File?</h2>
+
+	<p>
+	I don't know about you but when I first encountered this question my answer was along the lines of 'a file is a piece/block of data'. While this definition is useful for beginners, it lacks details that more advanced users could use. So I'd like to present a more helpful view of a file.
+	</p>
+
+	<h2>What is a Folder?</h2>
+
+	<p>
+	</p>
+</div>
